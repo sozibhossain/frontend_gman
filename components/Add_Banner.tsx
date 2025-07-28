@@ -17,6 +17,9 @@ interface BannerAd {
     public_id: string;
     url: string;
   };
+  title: string;
+  link: string;
+  clicked: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -28,6 +31,23 @@ async function fetchBanners(): Promise<BannerAd[]> {
     throw new Error(data.message || "Failed to fetch banners");
   }
   return data.data;
+}
+
+async function trackClick(bannerId: string): Promise<void> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/post-click/${bannerId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    if (!data.success) {
+      console.error("Failed to track click:", data.message);
+    }
+  } catch (error) {
+    console.error("Error tracking click:", error);
+  }
 }
 
 export default function Add_Banner() {
@@ -72,6 +92,13 @@ export default function Add_Banner() {
     api?.scrollTo(index);
   };
 
+  const handleBannerClick = (banner: BannerAd) => {
+    // Track the click
+    trackClick(banner._id);
+    // Redirect to the banner's link
+    window.open(banner.link, "_blank");
+  };
+
   if (!isVisible) return null;
   if (error) return <div>Error loading banners: {error.message}</div>;
   if (bannerAds.length === 0 && !isLoading) return <div>No banners available</div>;
@@ -105,18 +132,23 @@ export default function Add_Banner() {
             {bannerAds.map((ad) => (
               <CarouselItem key={ad._id} className="w-full">
                 <div
-                  className="relative w-full h-40 sm:h-48 md:h-56 lg:h-64 flex items-center justify-center"
+                  className="relative w-full h-40 sm:h-48 md:h-56 lg:h-64 flex items-center justify-center cursor-pointer"
                   style={{
                     backgroundImage: `url(${ad.thumbnail.url})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
+                  onClick={() => handleBannerClick(ad)}
+                  title={ad.title}
                 >
                   <Button
                     variant="ghost"
                     size="icon"
                     className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/80 hover:bg-white"
-                    onClick={() => setIsVisible(false)}
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent triggering banner click
+                      setIsVisible(false);
+                    }}
                   >
                     <X className="h-4 w-4" />
                     <span className="sr-only">Close</span>
