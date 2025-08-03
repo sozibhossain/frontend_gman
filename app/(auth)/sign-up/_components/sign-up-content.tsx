@@ -108,7 +108,7 @@ export default function RegisterContent() {
         }
 
         if (userType === "seller") {
-          router.push("/become-seller");
+          router.push("/seller");
         } else {
           router.push("/login");
         }

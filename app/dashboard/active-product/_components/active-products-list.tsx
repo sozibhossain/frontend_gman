@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -36,8 +36,11 @@ interface Product {
     url: string;
   };
 }
+interface PendingProductsListProps {
+  onEdit: (productId: string) => void;
+}
 
-export function ActiveProductsList() {
+export function ActiveProductsList({ onEdit }: PendingProductsListProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const limit = 10;
@@ -68,14 +71,12 @@ export function ActiveProductsList() {
   // Assuming API returns something like:
   // { data: Product[], total: number, totalPage: number }
 
-
-
   const products: Product[] = data?.data || [];
 
   const totalPages = data?.totalPage || 1;
   const totalItems = data?.total || 0;
 
-    console.log(products)
+  console.log(products);
 
   // Delete mutation
   const deleteMutation = useMutation({
@@ -126,7 +127,10 @@ export function ActiveProductsList() {
         </TableHeader>
         <TableBody>
           {[...Array(5)].map((_, index) => (
-            <TableRow className="text-[18px] text-[#323232] font-medium" key={index}>
+            <TableRow
+              className="text-[18px] text-[#323232] font-medium"
+              key={index}
+            >
               <TableCell>
                 <div className="flex gap-3 items-center">
                   <div className="h-[60px] w-[100px] bg-gray-200 rounded-md animate-pulse"></div>
@@ -172,8 +176,6 @@ export function ActiveProductsList() {
     return <SkeletonLoader />;
   }
 
-
-  
   return (
     <>
       <div>
@@ -190,7 +192,10 @@ export function ActiveProductsList() {
           </TableHeader>
           <TableBody>
             {products.map((product) => (
-              <TableRow className="text-[18px] text-[#323232] font-medium" key={product._id}>
+              <TableRow
+                className="text-[18px] text-[#323232] font-medium"
+                key={product._id}
+              >
                 <TableCell>
                   <div className="flex gap-3">
                     <Image
@@ -210,6 +215,13 @@ export function ActiveProductsList() {
                   {new Date(product.createdAt).toLocaleString()}
                 </TableCell>
                 <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onEdit(product._id)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
