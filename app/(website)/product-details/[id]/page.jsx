@@ -127,6 +127,8 @@ async function addToCart({ productId, quantity, token }) {
 
   const product = data?.data;
 
+  console.log("POOOOOOO", product)
+
   // Set farmId when product changes
   useEffect(() => {
     if (product?.farm?._id) {
@@ -134,11 +136,17 @@ async function addToCart({ productId, quantity, token }) {
     }
   }, [product]);
 
-  const images = product?.media?.map((item) => item.url) || [];
+  // const images = product?.media?.map((item) => item.url) || [];
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
   };
+
+  // Define images array to include both media and thumbnail
+const images = [
+  ...(product?.media?.map((item) => item.url) || []),
+  ...(product?.thumbnail?.url ? [product.thumbnail.url] : []),
+];
 
   const prevImage = () => {
     setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
@@ -194,56 +202,61 @@ async function addToCart({ productId, quantity, token }) {
       <div className="container mx-auto px-4 py-6 sm:py-8 shadow-md mb-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10 mb-8">
           {/* Image Gallery */}
-          <div className="space-y-4">
-            <div className="relative aspect-square w-full h-[200px] sm:h-[300px] lg:h-[353px] rounded-lg overflow-hidden">
-              <Image
-                src={images[currentImageIndex] || "/placeholder.svg"}
-                alt={product.title}
-                fill
-                className="object-cover"
-                priority
-              />
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
-                onClick={prevImage}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
-                onClick={nextImage}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
+          
 
-            {/* Thumbnails */}
-            <div className="grid grid-cols-4 gap-2">
-              {images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`rounded-lg overflow-hidden border-2 transition-colors ${
-                    currentImageIndex === index
-                      ? "border-green-500"
-                      : "border-gray-200"
-                  }`}
-                >
-                  <Image
-                    src={image || "/placeholder.svg"}
-                    alt={`Thumbnail ${index + 1}`}
-                    width={1000}
-                    height={1000}
-                    className="object-cover w-full h-[60px] sm:h-[80px] lg:h-[116px]"
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
+<div className="space-y-4">
+  <div className="relative aspect-square w-full h-[200px] sm:h-[300px] lg:h-[353px] rounded-lg overflow-hidden">
+    <Image
+      src={images[currentImageIndex] || "/placeholder.svg"}
+      alt={product.title}
+      fill
+      className="object-cover"
+      priority
+    />
+    {/* Show navigation buttons only if there are multiple images */}
+    {images.length > 1 && (
+      <>
+        <Button
+          variant="outline"
+          size="icon"
+          className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
+          onClick={prevImage}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
+          onClick={nextImage}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+      </>
+    )}
+  </div>
+
+  {/* Thumbnails */}
+  <div className="grid grid-cols-4 gap-2">
+    {images.map((image, index) => (
+      <button
+        key={index}
+        onClick={() => setCurrentImageIndex(index)}
+        className={`rounded-lg overflow-hidden border-2 transition-colors ${
+          currentImageIndex === index ? "border-green-500" : "border-gray-200"
+        }`}
+      >
+        <Image
+          src={image || "/placeholder.svg"}
+          alt={`Thumbnail ${index + 1}`}
+          width={1000}
+          height={1000}
+          className="object-cover w-full h-[60px] sm:h-[80px] lg:h-[116px]"
+        />
+      </button>
+    ))}
+  </div>
+</div>
 
           {/* Product Details */}
           <div className="space-y-6">

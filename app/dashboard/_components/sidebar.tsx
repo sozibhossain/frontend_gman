@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
-import { BarChart3, Package, ShoppingCart, MessageSquare, TrendingUp, LogOut, PackageSearch,Settings } from "lucide-react"
+import { BarChart3, Package, ShoppingCart, MessageSquare, TrendingUp, LogOut, Settings } from "lucide-react"
 
 import {
   Sidebar,
@@ -31,16 +31,16 @@ const sidebarItems = [
   },
   {
     id: "active-products",
-    label: "Active Product List",
+    label: "Add Product",
     icon: Package,
     href: "/dashboard/active-product",
   },
-  {
-    id: "pending-products",
-    label: "Pending Product List",
-    icon: PackageSearch,
-    href: "/dashboard/pending-product",
-  },
+  // {
+  //   id: "pending-products",
+  //   label: "Pending Product List",
+  //   icon: PackageSearch,
+  //   href: "/dashboard/pending-product",
+  // },
   {
     id: "messages",
     label: "Message",

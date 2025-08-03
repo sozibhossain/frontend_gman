@@ -9,6 +9,7 @@ import { CreateProductForm } from "./_components/create-product-form";
 export default function ActiveProductsPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const queryClient = useQueryClient();
+  const [editingProduct, setEditingProduct] = useState<string | null>(null);
 
   return (
     <div className="space-y-6">
@@ -33,8 +34,17 @@ export default function ActiveProductsPage() {
             queryClient.invalidateQueries({ queryKey: ["products"] });
           }}
         />
+      ) : editingProduct ? (
+        <CreateProductForm
+          productId={editingProduct}
+          onClose={() => setEditingProduct(null)}
+          onSuccess={() => {
+            setEditingProduct(null);
+            queryClient.invalidateQueries({ queryKey: ["products"] });
+          }}
+        />
       ) : (
-        <ActiveProductsList />
+        <ActiveProductsList onEdit={setEditingProduct} />
       )}
     </div>
   );
