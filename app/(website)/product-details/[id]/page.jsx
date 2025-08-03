@@ -142,7 +142,7 @@ async function addToCart({ productId, quantity, token }) {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
   };
 
-  // Define images array to include both media and thumbnail
+  
 const images = [
   ...(product?.media?.map((item) => item.url) || []),
   ...(product?.thumbnail?.url ? [product.thumbnail.url] : []),
